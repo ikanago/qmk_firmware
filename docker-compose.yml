@@ -1,0 +1,25 @@
+version: "3"
+services:
+  # JSON to C
+  json2c:
+    image: qmkfm/base_container:latest
+    working_dir: /qmk_firmware
+    volumes:
+      - ./keyboards:/qmk_firmware/keyboards
+    environment:
+      # Absolute path of the keymap json from QMK Configurator
+      EXPORTED: /qmk_firmware/keyboards/helix/rev2/keymaps/custom/export.json
+      # QMK Command: qmk json2c [-o OUTPUT] JSON_FILE
+      command: /bin/bash -c 'qmk json2c $$EXPORTED > $$(dirname $$EXPORTED)/keymaps_var.c'
+
+  # Compile keymap.c to hex file
+  compile:
+    image: qmkfm/base_container:latest
+    working_dir: /qmk_firmware
+    volumes:
+      - $PWD:/qmk_firmware
+    environment:
+      KEYBOARD: ergodash/rev1
+      KEYMAP: ikanago
+    # QMK Command: qmk compile -kb KEYBOARD -km KEYMAP
+    command: /bin/bash -c 'make $$KEYBOARD:$$KEYMAP'
