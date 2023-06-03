@@ -15,22 +15,7 @@ enum custom_keycodes {
     LOWER,
     RAISE,
     ADJUST,
-    REVERT,
-    ZOOMIN,
-    ZOOMOUT,
 };
-
-#ifdef TAP_DANCE_ENABLE
-#    include "process_tap_dance.h"
-
-enum tap_dance_codes {
-    TD_Q_ESC = 0,
-};
-
-qk_tap_dance_action_t tap_dance_actions[] = {
-    [TD_Q_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_Q, KC_ESC),
-};
-#endif  // TAP_DANCE_ENABLE
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -50,11 +35,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * ,----------------------------------------------------------------------------------------------------------------------.
    */
   [_QWERTY] = LAYOUT( \
-    KC_GRV,  KC_1,            KC_2,    KC_3,    KC_4,    KC_5,    KC_ESC ,                        KC_BSPC, KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_PSCR, \
-    KC_TAB,  TD(TD_Q_ESC),    KC_W,    KC_E,    KC_R,    KC_T,    KC_MINS,                        KC_EQL , KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS, \
-    KC_LCTL, KC_A,            KC_S,    KC_D,    KC_F,    KC_G,    KC_LBRC,                        KC_RBRC, KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, \
-    KC_LSFT, KC_Z,            KC_X,    KC_C,    KC_V,    KC_B,    TG(_DRAW),                      KC_SPC , KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT, \
-    KC_LCTL, KC_LGUI,         KC_LALT, EISU,             LOWER,   KC_BSPC,KC_DEL,          KC_ENT,KC_SPC , RAISE,            KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT  \
+    KC_GRV,        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_ESC ,                        KC_BSPC, KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_PSCR, \
+    KC_TAB,        KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_MINS,                        KC_EQL , KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS, \
+    CTL_T(KC_TAB), KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_LBRC,                        KC_RBRC, KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, \
+    KC_LSFT,       KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    _______,                        KC_SPC , KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT, \
+    KC_LCTL,       KC_LGUI, KC_LALT, EISU,             LOWER,   KC_BSPC,KC_DEL,          KC_ENT,KC_SPC , RAISE,            KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT  \
   ),
 
   /* Lower
@@ -99,27 +84,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LCTL, KC_LGUI, KC_LALT, EISU,             LOWER,   KC_SPC ,KC_DEL,         KC_BSPC,KC_ENT , RAISE,            KC_HOME, KC_PGDN, KC_PGUP, KC_END   \
   ),
 
-  /* Draw
-   * ,----------------------------------------------------------------------------------------------------------------------.
-   * |      |      |      |      |      |      |      |                    |      |      |      |      |      |      |      |
-   * |------+------+------+------+------+------+---------------------------+------+------+------+------+------+------+------|
-   * |      |Backet| Brush|Eraser|  Pen |Select| Lasso|                    |      |      |      |      |      |      |      |
-   * |------+------+------+------+------+------+---------------------------+------+------+------+------+------+------+------|
-   * |      |LinMod|ZoomOu|ZoomIn|Revert| Save |      |                    |      |      |      |      |      |      |      |
-   * |------+------+------+------+------+------+---------------------------+------+------+------+------+------+------+------|
-   * |      |      |      |      |Brush-|Brush+|      |                    |      |      |      |      |      |      |      |
-   * |-------------+------+------+------+------+------+------+------+------+------+------+------+------+------+-------------|
-   * |      |      |      |      ||||||||Lower | Space|      ||||||||      |      |Raise ||||||||      |      |      |      |
-   * ,----------------------------------------------------------------------------------------------------------------------.
-   */
-  [_DRAW] = LAYOUT(
-    _______, _______, _______, _______, _______, _______,_______,                       _______, _______, _______, _______, _______, _______, _______, \
-    _______, KC_G   , KC_B,    KC_E,    KC_P,    KC_M,   KC_U,                          _______, _______, _______, _______, _______, _______, _______, \
-    _______, KC_Y   , ZOOMOUT, ZOOMIN,  REVERT,  C(KC_S),_______,                       _______, _______, _______, _______, _______, _______, _______, \
-    _______, _______, _______, _______, KC_LBRC, KC_RBRC,_______,                       _______, _______, _______, _______, _______, _______, _______, \
-    _______, _______, _______, _______,          LOWER  ,KC_SPC, _______,       _______,_______, RAISE  ,          _______, _______, _______, _______  \
-  ),
-
   /* Adjust
    * ,----------------------------------------------------------------------------------------------------------------------.
    * |      |      |      |      |      |      |      |                    |      |      |      |      |      |      |      |
@@ -149,6 +113,8 @@ void persistent_default_layer_set(uint16_t default_layer) {
     default_layer_set(default_layer);
 }
 
+// If this funtion returns true, let QMK send the original events.
+// And if it returns false, skip all further processing of the key.
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case QWERTY:
@@ -185,21 +151,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 layer_off(_ADJUST);
             }
             return false;
-            break;
-        case REVERT:
-            if (record->event.pressed) {
-                SEND_STRING(SS_LCTL("z"));
-            }
-            break;
-        case ZOOMIN:
-            if (record->event.pressed) {
-                SEND_STRING(SS_LCTL(";"));
-            }
-            break;
-        case ZOOMOUT:
-            if (record->event.pressed) {
-                SEND_STRING(SS_LCTL("-"));
-            }
             break;
     }
     return true;
