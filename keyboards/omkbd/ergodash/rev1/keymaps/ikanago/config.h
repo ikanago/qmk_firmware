@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-
 /* Use I2C or Serial, not both */
 
 #define USE_SERIAL
@@ -31,3 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MASTER_LEFT
 // #define MASTER_RIGHT
 // #define EE_HANDS
+
+// Send a key for tap if I release the key without pressing another key.
+#define RETRO_TAPPING
