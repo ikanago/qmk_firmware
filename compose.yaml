@@ -1,0 +1,14 @@
+version: "3"
+services:
+  # Compile keymap.c to hex file
+  compile:
+    image: qmkfm/qmk_cli:latest
+    platform: linux/amd64
+    working_dir: /qmk_firmware
+    volumes:
+      - ./:/qmk_firmware
+    environment:
+      KEYBOARD: ergodash/rev1
+      KEYMAP: ikanago
+    # QMK Command: qmk compile -kb KEYBOARD -km KEYMAP
+    command: /bin/bash -c 'make $$KEYBOARD:$$KEYMAP'
