@@ -1,4 +1,3 @@
-version: "3"
 services:
   # Compile keymap.c to hex file
   compile:
